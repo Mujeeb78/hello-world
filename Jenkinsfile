@@ -1,4 +1,5 @@
 node('') {
+	def sonarScanner = tool name: 'forSonar', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
 	stage ('checkout code'){
 		checkout scm
 	}
@@ -11,9 +12,11 @@ node('') {
 		sh "mvn clean test"
 	}
 
-// 	stage ('Sonar Analysis'){
-// 		//sh 'mvn sonar:sonar -Dsonar.host.url=http://35.153.67.119:9000 -Dsonar.login=77467cfd2653653ad3b35463fbfdb09285f08be5'
-// 	}
+        stage('SonarQube Analysis'){
+          withSonarQubeEnv(credentialsId: 'sonarCred') {
+           sh "${sonarScanner}/bin/sonar-scanner -Dsonar.projectKey=hello-world -Dsonar.sources=."
+            } 
+        }
 
 // 	stage ('Archive Artifacts'){
 // 		archiveArtifacts artifacts: 'target/*.war'
